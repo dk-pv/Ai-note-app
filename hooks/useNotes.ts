@@ -21,23 +21,41 @@ export function useNotes() {
 
   async function fetchNotes(search = "") {
     setLoading(true);
+    setError(null);
+
     try {
-      const url = "/api/notes" + (search ? `?search=${encodeURIComponent(search)}` : "");
+      const url =
+        "/api/notes" + (search ? `?search=${encodeURIComponent(search)}` : "");
       const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error("Failed to fetch notes");
+      if (!res.ok) throw new Error("fetch_failed");
       const data = await res.json();
 
-      if (!shallowEqual(data.notes || [], notes)) {
-        setNotes(data.notes || []);
+      if (!data.notes || data.notes.length === 0) {
+        setNotes([]);
+        setError("You don’t have this note 😅");
+        return;
+      }
+
+      // Only update if changed
+      if (!shallowEqual(data.notes, notes)) {
+        setNotes(data.notes);
       }
     } catch (err: any) {
-      setError(err.message || "Error");
+      if (err.message === "fetch_failed") {
+        setError("Unable to fetch notes right now.");
+      } else {
+        setError("Something went wrong.");
+      }
     } finally {
       setTimeout(() => setLoading(false), 150);
     }
   }
 
-  async function createNote(payload: { title: string; content?: string; tags?: string[] }) {
+  async function createNote(payload: {
+    title: string;
+    content?: string;
+    tags?: string[];
+  }) {
     const res = await fetch("/api/notes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -71,5 +89,14 @@ export function useNotes() {
     return true;
   }
 
-  return { notes, loading, error, fetchNotes, createNote, updateNote, deleteNote, setNotes };
+  return {
+    notes,
+    loading,
+    error,
+    fetchNotes,
+    createNote,
+    updateNote,
+    deleteNote,
+    setNotes,
+  };
 }

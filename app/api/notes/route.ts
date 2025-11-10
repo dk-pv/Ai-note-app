@@ -1,4 +1,3 @@
-// app/api/notes/route.ts
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -13,14 +12,17 @@ export async function GET(req: Request) {
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const userId = (session.user as any).id;
 
+    const userId = (session.user as any).id;
     const url = new URL(req.url);
     const search = url.searchParams.get("search") || "";
+
+    // 🔍 Basic user filter
     const query: any = { userId };
 
+    // ✅ Regex-based title search (case-insensitive)
     if (search.trim()) {
-      query.$text = { $search: search };
+      query.title = { $regex: search, $options: "i" };
     }
 
     const notes = await Note.find(query).sort({ updatedAt: -1 }).lean();
@@ -31,8 +33,6 @@ export async function GET(req: Request) {
   }
 }
 
-
-
 export async function POST(req: Request) {
   try {
     await connectDB();
@@ -40,12 +40,15 @@ export async function POST(req: Request) {
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const userId = (session.user as any).id;
 
+    const userId = (session.user as any).id;
     const body = await req.json();
     const parse = noteCreateSchema.safeParse(body);
     if (!parse.success) {
-      return NextResponse.json({ error: parse.error.flatten() }, { status: 400 });
+      return NextResponse.json(
+        { error: parse.error.flatten() },
+        { status: 400 }
+      );
     }
 
     const { title, content, tags } = parse.data;

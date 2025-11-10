@@ -8,26 +8,37 @@ import NoteEditor from "./NoteEditor";
 import { Button } from "@/components/ui/button";
 
 export default function NotesClient() {
-  const { notes, loading, error, fetchNotes, createNote, updateNote, deleteNote } = useNotes();
+  const {
+    notes,
+    loading,
+    error,
+    fetchNotes,
+    createNote,
+    updateNote,
+    deleteNote,
+    setNotes,
+  } = useNotes();
   const [editing, setEditing] = useState<any | null>(null);
   const [showEditor, setShowEditor] = useState(false);
-
   const [query, setQuery] = useState("");
   const [debouncedQuery] = useDebounce(query, 300);
 
   useEffect(() => {
+    // If user clears search → reload all notes & remove message
+    if (debouncedQuery.trim() === "") {
+      fetchNotes("");
+      return;
+    }
     fetchNotes(debouncedQuery);
   }, [debouncedQuery]);
 
   const handleSave = async (data: any) => {
     try {
-      if (editing) {
-        await updateNote(editing._id, { title: data.title, content: data.content });
-      } else {
-        await createNote({ title: data.title, content: data.content });
-      }
+      if (editing) await updateNote(editing._id, data);
+      else await createNote(data);
       setShowEditor(false);
       setEditing(null);
+      fetchNotes(query);
     } catch (err: any) {
       alert(err.message || "Save failed");
     }
@@ -42,6 +53,7 @@ export default function NotesClient() {
     if (!confirm("Delete this note?")) return;
     try {
       await deleteNote(id);
+      fetchNotes(query);
     } catch (err: any) {
       alert(err.message || "Delete failed");
     }
@@ -51,7 +63,12 @@ export default function NotesClient() {
     <div>
       <div className="flex gap-4 mb-4">
         <SearchBar onSearch={setQuery} />
-        <Button onClick={() => { setEditing(null); setShowEditor(true); }}>
+        <Button
+          onClick={() => {
+            setEditing(null);
+            setShowEditor(true);
+          }}
+        >
           New Note
         </Button>
       </div>
@@ -61,18 +78,21 @@ export default function NotesClient() {
           <NoteEditor
             initial={editing}
             onSave={handleSave}
-            onCancel={() => { setShowEditor(false); setEditing(null); }}
+            onCancel={() => {
+              setShowEditor(false);
+              setEditing(null);
+            }}
           />
         </div>
       )}
 
       {loading ? (
         <p>Loading...</p>
-      ) : (
+      ) : notes.length > 0 ? (
         <NotesList notes={notes} onEdit={handleEdit} onDelete={handleDelete} />
+      ) : (
+        error && <p className="text-gray-500 italic mt-4">{error}</p>
       )}
-
-      {error && <p className="text-red-500 mt-4">{error}</p>}
     </div>
   );
 }
