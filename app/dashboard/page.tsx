@@ -1,4 +1,3 @@
-// app/dashboard/page.tsx
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Link from "next/link";
@@ -34,8 +33,6 @@ export default async function DashboardPage() {
           Logout
         </Link>
       </div>
-
-      {/* Notes List UI */}
       <NotesClient />
     </div>
   );

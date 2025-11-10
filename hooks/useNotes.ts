@@ -27,14 +27,12 @@ export function useNotes() {
       if (!res.ok) throw new Error("Failed to fetch notes");
       const data = await res.json();
 
-      // ✅ update only if new data differs
       if (!shallowEqual(data.notes || [], notes)) {
         setNotes(data.notes || []);
       }
     } catch (err: any) {
       setError(err.message || "Error");
     } finally {
-      // ✅ smooth transition
       setTimeout(() => setLoading(false), 150);
     }
   }

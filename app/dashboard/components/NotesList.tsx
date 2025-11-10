@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import NoteCard from "./NoteCard";
 
 export default function NotesList({ notes, onEdit, onDelete }: { notes: any[]; onEdit: any; onDelete: any }) {

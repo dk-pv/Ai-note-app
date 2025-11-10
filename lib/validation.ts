@@ -13,11 +13,10 @@ export const loginSchema = z.object({
 
 export const noteCreateSchema = z.object({
   title: z.string().min(1, "Title is required").max(200),
-  content: z.string().default(""), // ✅ valid default
-  tags: z.array(z.string()).default([]), // ✅ valid default
+  content: z.string().default(""), 
+  tags: z.array(z.string()).default([]), 
 });
 
-// partial for update
 export const noteUpdateSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   content: z.string().optional(),

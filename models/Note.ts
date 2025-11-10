@@ -1,4 +1,3 @@
-// models/Note.ts
 import mongoose, { Document, Model } from "mongoose";
 
 export interface INote extends Document {
@@ -17,7 +16,6 @@ const NoteSchema = new mongoose.Schema<INote>({
   tags: { type: [String], default: [] },
 }, { timestamps: true });
 
-// optional: text index for searching by title/content
 NoteSchema.index({ title: "text", content: "text" });
 
 const Note: Model<INote> = mongoose.models.Note || mongoose.model<INote>("Note", NoteSchema);

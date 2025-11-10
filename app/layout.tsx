@@ -38,7 +38,6 @@ export default function RootLayout({
               </div>
             </nav>
 
-            {/* Page Content */}
             <div className="flex-1 container mx-auto px-4 py-6">{children}</div>
           </main>
           <Toaster position="top-center" richColors closeButton />

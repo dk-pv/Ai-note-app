@@ -12,11 +12,9 @@ export default function NotesClient() {
   const [editing, setEditing] = useState<any | null>(null);
   const [showEditor, setShowEditor] = useState(false);
 
-  // 🔍 Search debounce setup
   const [query, setQuery] = useState("");
   const [debouncedQuery] = useDebounce(query, 300);
 
-  // Fetch once + on search change
   useEffect(() => {
     fetchNotes(debouncedQuery);
   }, [debouncedQuery]);

@@ -5,7 +5,6 @@ import { authOptions } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import Note from "@/models/Note";
 import { noteCreateSchema } from "@/lib/validation";
-import { z } from "zod";
 
 export async function GET(req: Request) {
   try {
@@ -21,10 +20,7 @@ export async function GET(req: Request) {
     const query: any = { userId };
 
     if (search.trim()) {
-      // use text search if available
       query.$text = { $search: search };
-      // alternative: regex on title
-      // query.title = { $regex: search, $options: "i" };
     }
 
     const notes = await Note.find(query).sort({ updatedAt: -1 }).lean();
@@ -34,6 +30,8 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
+
+
 
 export async function POST(req: Request) {
   try {

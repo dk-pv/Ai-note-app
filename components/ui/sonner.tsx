@@ -9,7 +9,7 @@ export function Toaster(props: ToasterProps) {
   return (
     <Sonner
       theme={theme === "dark" ? "dark" : "light"}
-      {...props} 
+      {...props}
     />
   );
 }
