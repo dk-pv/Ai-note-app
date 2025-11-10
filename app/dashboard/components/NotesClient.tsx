@@ -24,7 +24,6 @@ export default function NotesClient() {
   const [debouncedQuery] = useDebounce(query, 300);
 
   useEffect(() => {
-    // If user clears search → reload all notes & remove message
     if (debouncedQuery.trim() === "") {
       fetchNotes("");
       return;

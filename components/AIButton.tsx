@@ -7,6 +7,7 @@ interface AIButtonProps {
   type: "summary" | "improve" | "tags";
   content: string;
   onResult: (result: string | string[]) => void;
+  onClick?: () => void;
 }
 
 const labelMap = {

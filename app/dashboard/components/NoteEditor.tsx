@@ -23,6 +23,8 @@ export default function NoteEditor({
   onCancel,
 }: NoteEditorProps) {
   const [aiResult, setAiResult] = useState<string | string[] | null>(null);
+  const [contentValue, setContentValue] = useState(initial?.content || "");
+  const [showContentWarning, setShowContentWarning] = useState(false);
 
   const defaultValues: FormData = {
     title: initial?.title || "",
@@ -30,7 +32,6 @@ export default function NoteEditor({
     tags: initial?.tags || [],
   };
 
-  // ✅ Proper type-safe zodResolver usage
   const {
     register,
     handleSubmit,
@@ -41,12 +42,11 @@ export default function NoteEditor({
     defaultValues,
   });
 
-  // Reset when editing another note
   useEffect(() => {
     reset(defaultValues);
+    setContentValue(initial?.content || "");
   }, [initial, reset]);
 
-  // ✅ onSubmit handler — strongly typed
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       await onSave({ ...data, _id: initial?._id });
@@ -55,12 +55,19 @@ export default function NoteEditor({
     }
   };
 
+  const handleAIAction = (type: "summary" | "improve" | "tags") => {
+    if (!contentValue.trim()) {
+      setShowContentWarning(true);
+      return;
+    }
+    setShowContentWarning(false);
+  };
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
       className="space-y-4 p-4 border rounded-xl bg-white dark:bg-gray-900 shadow-sm"
     >
-      {/* Title */}
       <div>
         <label className="text-sm font-medium">Title</label>
         <Input {...register("title")} placeholder="Enter note title..." />
@@ -69,39 +76,45 @@ export default function NoteEditor({
         )}
       </div>
 
-      {/* Content */}
       <div>
         <label className="text-sm font-medium">Content</label>
         <Textarea
           {...register("content")}
           rows={6}
           placeholder="Write your note content..."
+          onChange={(e) => setContentValue(e.target.value)}
         />
         {errors.content && (
           <p className="text-xs text-red-500 mt-1">{errors.content.message}</p>
         )}
+        {showContentWarning && (
+          <p className="text-xs text-yellow-600 mt-1">
+            Please fill in this field before using AI tools.
+          </p>
+        )}
       </div>
 
-      {/* 🌟 AI Integration Buttons */}
       <div className="flex flex-wrap gap-2">
         <AIButton
           type="summary"
-          content={initial?.content || ""}
+          content={contentValue}
+          onClick={() => handleAIAction("summary")}
           onResult={(r) => setAiResult(r)}
         />
         <AIButton
           type="improve"
-          content={initial?.content || ""}
+          content={contentValue}
+          onClick={() => handleAIAction("improve")}
           onResult={(r) => setAiResult(r)}
         />
         <AIButton
           type="tags"
-          content={initial?.content || ""}
+          content={contentValue}
+          onClick={() => handleAIAction("tags")}
           onResult={(r) => setAiResult(r)}
         />
       </div>
 
-      {/* 🧠 AI Output */}
       {aiResult && (
         <div className="p-3 border rounded-lg bg-gray-50 dark:bg-gray-800 mt-3">
           <h3 className="font-semibold mb-2">AI Result:</h3>
@@ -119,7 +132,6 @@ export default function NoteEditor({
         </div>
       )}
 
-      {/* Buttons */}
       <div className="flex gap-2 pt-3">
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Saving..." : "Save"}
