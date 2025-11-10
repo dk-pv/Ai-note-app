@@ -38,6 +38,30 @@ This project demonstrates end-to-end MERN/PERN stack skills with clean architect
 | **AI Integration** | Google Gemini API |
 | **Deployment** | Vercel (Frontend + API) |
 
+
+
+
+
+
+
+
+🧾 API Routes Overview
+
+Method	Endpoint	         Description
+POST	/api/auth/register	Register new user
+POST	/api/auth/login	    Login existing user
+GET	    /api/notes	        Fetch all notes
+POST	/api/notes	        Create a new note
+PUT 	/api/notes/[id]	    Update an existing note
+DELETE	/api/notes/[id]	    Delete a note
+POST	/api/ai/summary	    Generate AI summary
+POST	/api/ai/improve	    Improve note
+POST	/api/ai/tags	    Generate tags
+
+
+
+
+
 ---
 
 ## ⚙️ Environment Variables
@@ -51,3 +75,9 @@ NEXTAUTH_URL=
 GEMINI_API_KEY=
 GEMINI_MODEL=
 FRONTEND_URL=
+
+
+
+👨‍💻 Developer: Danish Pv
+
+💻 Built with ❤️ using Next.js + Gemini AI
