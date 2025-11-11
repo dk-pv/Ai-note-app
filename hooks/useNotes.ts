@@ -32,11 +32,10 @@ export function useNotes() {
 
       if (!data.notes || data.notes.length === 0) {
         setNotes([]);
-        setError("You don’t have this note 😅");
+        setError("You don’t have any note 😅");
         return;
       }
 
-      // Only update if changed
       if (!shallowEqual(data.notes, notes)) {
         setNotes(data.notes);
       }
